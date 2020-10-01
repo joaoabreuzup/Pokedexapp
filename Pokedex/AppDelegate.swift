@@ -11,27 +11,14 @@ import UIKit
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
+    var window: UIWindow?
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        
-//        let service = HomeScreenService()
-//        service.fetchPokemonUrlList { result in
-//            switch result {
-//            case .success(let data):
-//                service.fetchPokemon(with: data.results[1].url) { result in
-//                    switch result {
-//                    case .success(let pokemon):
-//                        print(pokemon)
-//                    case .failure(let err):
-//                        print(err.localizedDescription)
-//                    }
-//                }
-//            case .failure(let err):
-//                print(err.localizedDescription)
-//            }
-//        }
-        let viewModel = HomeScreenViewModel()
-        viewModel.fetchPokemonUrlList()
+        window = UIWindow(frame: UIScreen.main.bounds)
+        window?.rootViewController = HomeScreenViewController(viewModel: HomeScreenViewModel())
+        window?.makeKeyAndVisible()
         return true
+        
     }
 
 }

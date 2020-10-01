@@ -24,6 +24,7 @@ struct PokemonList: Codable {
 
 // MARK: - Pokemon
 struct Pokemon: Codable {
+    let id: Int?
     let name: String?
     let sprites: Sprites?
     let types: [Types]?

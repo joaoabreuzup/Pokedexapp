@@ -16,7 +16,6 @@
 		0DB7375A252427FE00D2C84D /* NetworkDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DB73759252427FE00D2C84D /* NetworkDispatcher.swift */; };
 		0DB7375D2524297500D2C84D /* HomeScreenService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DB7375C2524297500D2C84D /* HomeScreenService.swift */; };
 		0DB7375F25242F6600D2C84D /* Urls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DB7375E25242F6600D2C84D /* Urls.swift */; };
-		0DB73762252438A100D2C84D /* JSONPrettyPrinted.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DB73761252438A100D2C84D /* JSONPrettyPrinted.swift */; };
 		0DB737652524E89100D2C84D /* HomeScreenViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DB737642524E89100D2C84D /* HomeScreenViewModel.swift */; };
 		0DB7376825251BA400D2C84D /* HomeScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DB7376725251BA400D2C84D /* HomeScreenViewController.swift */; };
 		0DB7376A25251FF600D2C84D /* ViewCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DB7376925251FF600D2C84D /* ViewCode.swift */; };
@@ -47,7 +46,6 @@
 		0DB73759252427FE00D2C84D /* NetworkDispatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkDispatcher.swift; sourceTree = "<group>"; };
 		0DB7375C2524297500D2C84D /* HomeScreenService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeScreenService.swift; sourceTree = "<group>"; };
 		0DB7375E25242F6600D2C84D /* Urls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Urls.swift; sourceTree = "<group>"; };
-		0DB73761252438A100D2C84D /* JSONPrettyPrinted.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONPrettyPrinted.swift; sourceTree = "<group>"; };
 		0DB737642524E89100D2C84D /* HomeScreenViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeScreenViewModel.swift; sourceTree = "<group>"; };
 		0DB7376725251BA400D2C84D /* HomeScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeScreenViewController.swift; sourceTree = "<group>"; };
 		0DB7376925251FF600D2C84D /* ViewCode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewCode.swift; sourceTree = "<group>"; };
@@ -173,7 +171,6 @@
 		0DB737602524389000D2C84D /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				0DB73761252438A100D2C84D /* JSONPrettyPrinted.swift */,
 				0DB7376925251FF600D2C84D /* ViewCode.swift */,
 			);
 			path = Extensions;
@@ -372,7 +369,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0DB73762252438A100D2C84D /* JSONPrettyPrinted.swift in Sources */,
 				0DB7375D2524297500D2C84D /* HomeScreenService.swift in Sources */,
 				0DB7376A25251FF600D2C84D /* ViewCode.swift in Sources */,
 				0DB737652524E89100D2C84D /* HomeScreenViewModel.swift in Sources */,
