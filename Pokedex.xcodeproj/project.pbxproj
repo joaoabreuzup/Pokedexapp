@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		00DF0ED665B7A352B408B362 /* Pods_Pokedex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B405E9C2FD605980549D8EDA /* Pods_Pokedex.framework */; };
+		0D4837A5252774010014A90F /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4837A4252774010014A90F /* Colors.swift */; };
 		0DB737332523E18C00D2C84D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DB737322523E18C00D2C84D /* AppDelegate.swift */; };
 		0DB7373C2523E19200D2C84D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0DB7373B2523E19200D2C84D /* Assets.xcassets */; };
 		0DB7373F2523E19200D2C84D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0DB7373D2523E19200D2C84D /* LaunchScreen.storyboard */; };
@@ -34,6 +35,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0D4837A4252774010014A90F /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		0DB7372F2523E18C00D2C84D /* Pokedex.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pokedex.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0DB737322523E18C00D2C84D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0DB7373B2523E19200D2C84D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -89,6 +91,14 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		0D4837A3252773E80014A90F /* DesignSystem */ = {
+			isa = PBXGroup;
+			children = (
+				0D4837A4252774010014A90F /* Colors.swift */,
+			);
+			path = DesignSystem;
+			sourceTree = "<group>";
+		};
 		0DB737262523E18C00D2C84D = {
 			isa = PBXGroup;
 			children = (
@@ -112,6 +122,7 @@
 		0DB737312523E18C00D2C84D /* Pokedex */ = {
 			isa = PBXGroup;
 			children = (
+				0D4837A3252773E80014A90F /* DesignSystem */,
 				0DB737602524389000D2C84D /* Extensions */,
 				0DB737582524276500D2C84D /* Network */,
 				0DB737542524237700D2C84D /* HomeScreen */,
@@ -370,6 +381,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0DB7375D2524297500D2C84D /* HomeScreenService.swift in Sources */,
+				0D4837A5252774010014A90F /* Colors.swift in Sources */,
 				0DB7376A25251FF600D2C84D /* ViewCode.swift in Sources */,
 				0DB737652524E89100D2C84D /* HomeScreenViewModel.swift in Sources */,
 				0DB7376C25252A3500D2C84D /* HomeScreenCollectionViewCell.swift in Sources */,

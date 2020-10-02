@@ -50,7 +50,6 @@ extension HomeScreenViewController: UICollectionViewDataSource {
         numberOfItemsInSection section: Int
     ) -> Int {
         return viewModel.getPokemonListCount()
-//        return 3
     }
     
     func collectionView(
@@ -59,7 +58,12 @@ extension HomeScreenViewController: UICollectionViewDataSource {
     ) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "customCell", for: indexPath)
         if let customCell = cell as? HomeScreenCollectionViewCell {
-            customCell.setupCell(url: viewModel.getPokemonImageUrl(indexPathRow: indexPath.row), id: viewModel.getPokemonId(indexPathRow: indexPath.row), name: viewModel.getPokemonName(indexPathRow: indexPath.row))
+            customCell.setupCell(
+                url: viewModel.getPokemonImageUrl(indexPathRow: indexPath.row),
+                id: viewModel.getPokemonId(indexPathRow: indexPath.row),
+                name: viewModel.getPokemonName(indexPathRow: indexPath.row),
+                type: viewModel.getPokemonFirstType(indexPathRow: indexPath.row)
+            )
         }
         return cell
     }
@@ -87,4 +91,14 @@ extension HomeScreenViewController: ViewCode {
         }
     }
     
+    func additionalConfigurations() {
+        viewModel.delegate = self
+    }
+    
+}
+
+extension HomeScreenViewController: HomeScreenViewModelDelegate {
+    func reloadData() {
+        self.collectionView.reloadData()
+    }
 }

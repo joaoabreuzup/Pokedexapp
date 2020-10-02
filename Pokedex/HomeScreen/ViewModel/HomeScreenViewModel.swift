@@ -10,44 +10,42 @@ import Foundation
 
 protocol HomeScreenViewModelProtocol {
     func fetchPokemonUrlList()
-    func fetchPokemon(with url: String, completion: @escaping (Result<Pokemon, Error>) -> Void)
     func getPokemonListCount() -> Int
     func getPokemonImageUrl(indexPathRow: Int) -> URL?
     func getPokemonId(indexPathRow: Int) -> Int
     func getPokemonName(indexPathRow: Int) -> String
-    func getPokemonUrl(indexPathRow: Int) -> String
+    func getPokemonFirstType(indexPathRow: Int) -> TypeClass
+    var delegate: HomeScreenViewModelDelegate? { get set }
+}
+
+
+protocol HomeScreenViewModelDelegate {
+    func reloadData()
 }
 
 class HomeScreenViewModel: HomeScreenViewModelProtocol {
     
     // MARK: - Model
-    private var pokemonUrlList: PokemonUrlList?
-    private var pokemonList: PokemonList = PokemonList(list: [])
+    private var pokemonList: PokemonList? {
+        didSet {
+            DispatchQueue.main.async {
+                self.delegate?.reloadData()
+            }
+        }
+    }
     
     // MARK: - Dependencies
+    private var pokemonUrlList: PokemonUrlList?
     private var service: HomeScreenServiceProtocol
+    var delegate: HomeScreenViewModelDelegate?
     
     // MARK: - Init
     init(service: HomeScreenServiceProtocol = HomeScreenService()) {
         self.service = service
     }
     
-    // MARK: - Methods
-    func fetchPokemonUrlList() {
-        service.fetchPokemonUrlList { result in
-            switch result {
-            case .success(let list):
-                self.pokemonUrlList = list
-                if self.pokemonUrlList?.results?.count == 20 {
-                    self.fetchPokemons()
-                }
-            case .failure(let err):
-                print(err.localizedDescription)
-            }
-        }
-    }
-    
-    func fetchPokemon(with url: String, completion: @escaping (Result<Pokemon, Error>) -> Void) {
+    // MARK: - Private Methods
+    private func fetchPokemon(with url: String, completion: @escaping (Result<Pokemon, Error>) -> Void) {
         service.fetchPokemon(with: url) { result in
             switch result {
             case .success(let pokemon):
@@ -60,7 +58,8 @@ class HomeScreenViewModel: HomeScreenViewModelProtocol {
         }
     }
     
-    private func fetchPokemons() {
+    private func fillPokemonList() {
+        pokemonList = PokemonList(list: [])
         pokemonUrlList?.results?.forEach {
             guard let url = $0.url else {
                 return
@@ -68,7 +67,7 @@ class HomeScreenViewModel: HomeScreenViewModelProtocol {
             fetchPokemon(with: url) { result in
                 switch result {
                 case .success(let pokemon):
-                    self.pokemonList.list.append(pokemon)
+                    self.pokemonList?.list.append(pokemon)
                 case .failure(let err):
                     print(err.localizedDescription)
                 }
@@ -76,24 +75,41 @@ class HomeScreenViewModel: HomeScreenViewModelProtocol {
         }
     }
     
+    // MARK: - Public Methods
+    func fetchPokemonUrlList() {
+        service.fetchPokemonUrlList { result in
+            switch result {
+            case .success(let list):
+                self.pokemonUrlList = list
+                self.fillPokemonList()
+            case .failure(let err):
+                print(err.localizedDescription)
+            }
+        }
+    }
+    
     func getPokemonListCount() -> Int {
-        return pokemonList.list.count
+        return pokemonList?.list.count ?? 0
     }
     
     func getPokemonImageUrl(indexPathRow: Int) -> URL? {
-        return URL(string: pokemonList.list[indexPathRow].sprites?.other?.officialArtwork?.frontDefault ?? "")
+        return URL(string: pokemonList?.list[indexPathRow].sprites?.other?.officialArtwork?.frontDefault ?? "")
     }
     
     func getPokemonId(indexPathRow: Int) -> Int {
-        return pokemonList.list[indexPathRow].id ?? 0
+        return pokemonList?.list[indexPathRow].id ?? 0
     }
     
     func getPokemonName(indexPathRow: Int) -> String {
-        return pokemonList.list[indexPathRow].name ?? ""
+        return pokemonList?.list[indexPathRow].name ?? ""
     }
     
-    func getPokemonUrl(indexPathRow: Int) -> String {
-        return pokemonUrlList?.results?[indexPathRow].url ?? ""
+    func getPokemonFirstType(indexPathRow: Int) -> TypeClass {
+        return pokemonList?.list[indexPathRow].types?.first?.type ?? TypeClass(name: nil, url: nil)
+    }
+    
+    func getPokemonTypes(indexPathRow: Int) -> [Types] {
+        return pokemonList?.list[indexPathRow].types ?? []
     }
     
 }

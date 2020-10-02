@@ -22,7 +22,7 @@ class HomeScreenCollectionViewCell: UICollectionViewCell {
     }
     
     // MARK: - Views
-    private lazy var image: UIImageView = {
+    private lazy var pokemonImage: UIImageView = {
         let imageView = UIImageView()
         return imageView
     }()
@@ -37,40 +37,61 @@ class HomeScreenCollectionViewCell: UICollectionViewCell {
         return label
     }()
     
-    // MARK: - Methods
+    private lazy var typeSlot1: UIImageView = {
+        let imageView = UIImageView()
+        return imageView
+    }()
+    
+    private lazy var typeSlot2: UIImageView = {
+        let imageView = UIImageView()
+        return imageView
+    }()
+    
+    // MARK: - Private Methods
     private func downloadImage(from url: URL?) {
-        image.sd_setImage(with: url)
+        pokemonImage.sd_setImage(with: url)
     }
     
-    private func setPokemonIdLabel(with id: Int) {
+    private func setupPokemonIdLabel(with id: Int) {
         pokemonId.text = "#\(id)"
     }
     
-    private func setPokemonNameLabel(with name: String) {
+    private func setupPokemonNameLabel(with name: String) {
         pokemonName.text = name
     }
     
-    func setupCell(url: URL?, id: Int, name: String) {
+    private func setCellBackgroundColor(for type: TypeClass) {
+        self.backgroundColor = UIColor.backgroundTypeColor.switchBackgroundTypeColor(type: type)
+    }
+    
+    private func setupTypeImages() {
+        
+    }
+    
+    func setupCell(url: URL?, id: Int, name: String, type: TypeClass) {
         downloadImage(from: url)
-        setPokemonIdLabel(with: id)
-        setPokemonNameLabel(with: name)
+        setupPokemonIdLabel(with: id)
+        setupPokemonNameLabel(with: name)
+        setCellBackgroundColor(for: type)
     }
     
 }
 
 extension HomeScreenCollectionViewCell: ViewCode {
     func buildViewHierarchy() {
-        contentView.addSubview(image)
+        contentView.addSubview(pokemonImage)
         contentView.addSubview(pokemonId)
         contentView.addSubview(pokemonName)
     }
     
     func setupConstraints() {
-        
+        pokemonImage.snp.makeConstraints {
+            $0.top.bottom.trailing.leading.equalToSuperview()
+        }
     }
     
     func additionalConfigurations() {
-        backgroundColor = .red
+        
     }
     
 }

@@ -10,6 +10,7 @@ import Foundation
 
 // MARK: - PokemonList
 struct PokemonUrlList: Codable {
+    let count: Int?
     let results: [Results]?
 }
 
