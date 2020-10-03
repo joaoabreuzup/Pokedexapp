@@ -32,13 +32,14 @@ class HomeScreenViewController: UIViewController {
     private func createCollection() -> UICollectionView {
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.scrollDirection = .vertical
-        flowLayout.minimumLineSpacing = 8
+        flowLayout.minimumLineSpacing = 40
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
         collectionView.register(HomeScreenCollectionViewCell.self, forCellWithReuseIdentifier: "customCell")
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.contentInset = .init(top: 40, left: 0, bottom: 40, right: 0)
         return collectionView
     }
     
@@ -62,12 +63,13 @@ extension HomeScreenViewController: UICollectionViewDataSource {
                 url: viewModel.getPokemonImageUrl(indexPathRow: indexPath.row),
                 id: viewModel.getPokemonId(indexPathRow: indexPath.row),
                 name: viewModel.getPokemonName(indexPathRow: indexPath.row),
-                type: viewModel.getPokemonFirstType(indexPathRow: indexPath.row)
+                types: viewModel.getPokemonTypes(indexPathRow: indexPath.row)
             )
         }
         return cell
+        
     }
-
+    
 }
 
 extension HomeScreenViewController: UICollectionViewDelegateFlowLayout {
@@ -76,7 +78,7 @@ extension HomeScreenViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        return CGSize(width: self.view.frame.width, height: 300)
+        return CGSize(width: 334, height: 115)
     }
 }
 
@@ -87,12 +89,14 @@ extension HomeScreenViewController: ViewCode {
     
     func setupConstraints() {
         collectionView.snp.makeConstraints {
-            $0.top.bottom.leading.trailing.equalTo(view.safeAreaInsets)
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(50)
+            $0.bottom.leading.trailing.equalTo(view.safeAreaInsets)
         }
     }
     
     func additionalConfigurations() {
         viewModel.delegate = self
+        collectionView.backgroundColor = .white
     }
     
 }

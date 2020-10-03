@@ -15,9 +15,9 @@ protocol HomeScreenViewModelProtocol {
     func getPokemonId(indexPathRow: Int) -> Int
     func getPokemonName(indexPathRow: Int) -> String
     func getPokemonFirstType(indexPathRow: Int) -> TypeClass
+    func getPokemonTypes(indexPathRow: Int) -> [Types]
     var delegate: HomeScreenViewModelDelegate? { get set }
 }
-
 
 protocol HomeScreenViewModelDelegate {
     func reloadData()
@@ -28,7 +28,7 @@ class HomeScreenViewModel: HomeScreenViewModelProtocol {
     // MARK: - Model
     private var pokemonList: PokemonList? {
         didSet {
-            DispatchQueue.main.async {
+            dispatchGroup.notify(queue: .main) {
                 self.delegate?.reloadData()
             }
         }
@@ -38,6 +38,7 @@ class HomeScreenViewModel: HomeScreenViewModelProtocol {
     private var pokemonUrlList: PokemonUrlList?
     private var service: HomeScreenServiceProtocol
     var delegate: HomeScreenViewModelDelegate?
+    let dispatchGroup = DispatchGroup()
     
     // MARK: - Init
     init(service: HomeScreenServiceProtocol = HomeScreenService()) {
@@ -77,14 +78,20 @@ class HomeScreenViewModel: HomeScreenViewModelProtocol {
     
     // MARK: - Public Methods
     func fetchPokemonUrlList() {
+        dispatchGroup.enter()
         service.fetchPokemonUrlList { result in
             switch result {
             case .success(let list):
                 self.pokemonUrlList = list
-                self.fillPokemonList()
+                self.dispatchGroup.leave()
             case .failure(let err):
                 print(err.localizedDescription)
             }
+        }
+        dispatchGroup.notify(queue: .main) {
+            self.dispatchGroup.enter()
+            self.fillPokemonList()
+            self.dispatchGroup.leave()
         }
     }
     
@@ -105,7 +112,7 @@ class HomeScreenViewModel: HomeScreenViewModelProtocol {
     }
     
     func getPokemonFirstType(indexPathRow: Int) -> TypeClass {
-        return pokemonList?.list[indexPathRow].types?.first?.type ?? TypeClass(name: nil, url: nil)
+        return pokemonList?.list[indexPathRow].types?.first?.type ?? TypeClass(name: nil)
     }
     
     func getPokemonTypes(indexPathRow: Int) -> [Types] {

@@ -63,5 +63,4 @@ struct Types: Codable {
 // MARK: - TypeClass
 struct TypeClass: Codable {
     let name: String?
-    let url: String?
 }

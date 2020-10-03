@@ -10,7 +10,7 @@ import UIKit
 
 extension UIColor {
     
-    struct typeColor {
+    struct TypeColor {
         static let bug = UIColor(named: "type-bug")
         static let dark = UIColor(named: "type-dark")
         static let dragon = UIColor(named: "type-dragon")
@@ -31,31 +31,7 @@ extension UIColor {
         static let water = UIColor(named: "type-water")
     }
     
-    struct backgroundTypeColor {
-        static func switchBackgroundTypeColor(type: TypeClass) -> UIColor{
-            switch type.name {
-            case "bug": return UIColor.backgroundTypeColor.bug ?? UIColor()
-            case "dark": return UIColor.backgroundTypeColor.dark ?? UIColor()
-            case "dragon": return UIColor.backgroundTypeColor.dragon ?? UIColor()
-            case "eletric": return UIColor.backgroundTypeColor.eletric ?? UIColor()
-            case "fairy": return UIColor.backgroundTypeColor.fairy ?? UIColor()
-            case "fighting": return UIColor.backgroundTypeColor.fighting ?? UIColor()
-            case "fire": return UIColor.backgroundTypeColor.fire ?? UIColor()
-            case "flying": return UIColor.backgroundTypeColor.flying ?? UIColor()
-            case "ghost": return UIColor.backgroundTypeColor.ghost ?? UIColor()
-            case "grass": return UIColor.backgroundTypeColor.grass ?? UIColor()
-            case "ground": return UIColor.backgroundTypeColor.ground ?? UIColor()
-            case "ice": return UIColor.backgroundTypeColor.ice ?? UIColor()
-            case "normal": return UIColor.backgroundTypeColor.normal ?? UIColor()
-            case "poison": return UIColor.backgroundTypeColor.poison ?? UIColor()
-            case "psychic": return UIColor.backgroundTypeColor.psychic ?? UIColor()
-            case "rock": return UIColor.backgroundTypeColor.rock ?? UIColor()
-            case "steel": return UIColor.backgroundTypeColor.steel ?? UIColor()
-            case "water": return UIColor.backgroundTypeColor.water ?? UIColor()
-            default: return .white
-            }
-            
-        }
+    struct BackgroundTypeColor {
         
         static let bug = UIColor(named: "background-type-bug")
         static let dark = UIColor(named: "background-type-dark")
@@ -75,5 +51,30 @@ extension UIColor {
         static let rock = UIColor(named: "background-type-rock")
         static let steel = UIColor(named: "background-type-steel")
         static let water = UIColor(named: "background-type-water")
+        
+        static func switchBackgroundTypeColor(type: TypeClass) -> UIColor{
+            switch type.name {
+            case "bug": return UIColor.BackgroundTypeColor.bug ?? UIColor()
+            case "dark": return UIColor.BackgroundTypeColor.dark ?? UIColor()
+            case "dragon": return UIColor.BackgroundTypeColor.dragon ?? UIColor()
+            case "eletric": return UIColor.BackgroundTypeColor.eletric ?? UIColor()
+            case "fairy": return UIColor.BackgroundTypeColor.fairy ?? UIColor()
+            case "fighting": return UIColor.BackgroundTypeColor.fighting ?? UIColor()
+            case "fire": return UIColor.BackgroundTypeColor.fire ?? UIColor()
+            case "flying": return UIColor.BackgroundTypeColor.flying ?? UIColor()
+            case "ghost": return UIColor.BackgroundTypeColor.ghost ?? UIColor()
+            case "grass": return UIColor.BackgroundTypeColor.grass ?? UIColor()
+            case "ground": return UIColor.BackgroundTypeColor.ground ?? UIColor()
+            case "ice": return UIColor.BackgroundTypeColor.ice ?? UIColor()
+            case "normal": return UIColor.BackgroundTypeColor.normal ?? UIColor()
+            case "poison": return UIColor.BackgroundTypeColor.poison ?? UIColor()
+            case "psychic": return UIColor.BackgroundTypeColor.psychic ?? UIColor()
+            case "rock": return UIColor.BackgroundTypeColor.rock ?? UIColor()
+            case "steel": return UIColor.BackgroundTypeColor.steel ?? UIColor()
+            case "water": return UIColor.BackgroundTypeColor.water ?? UIColor()
+            default: return .white
+            }
+        }
     }
+    
 }
