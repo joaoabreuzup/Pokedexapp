@@ -60,11 +60,11 @@ class HomeScreenViewModel: HomeScreenViewModelProtocol {
     }
     
     private func fillPokemonList() {
+        guard let resultList = pokemonUrlList?.results?.count else {return}
         pokemonList = PokemonList(list: [])
-        pokemonUrlList?.results?.forEach {
-            guard let url = $0.url else {
-                return
-            }
+        for i in 0..<resultList {
+            dispatchGroup.enter()
+            guard let url = pokemonUrlList?.results?[i].url else { return }
             fetchPokemon(with: url) { result in
                 switch result {
                 case .success(let pokemon):
@@ -72,6 +72,7 @@ class HomeScreenViewModel: HomeScreenViewModelProtocol {
                 case .failure(let err):
                     print(err.localizedDescription)
                 }
+                self.dispatchGroup.leave()
             }
         }
     }
@@ -86,17 +87,28 @@ class HomeScreenViewModel: HomeScreenViewModelProtocol {
                 self.dispatchGroup.leave()
             case .failure(let err):
                 print(err.localizedDescription)
+                self.dispatchGroup.leave()
             }
         }
         dispatchGroup.notify(queue: .main) {
             self.dispatchGroup.enter()
             self.fillPokemonList()
             self.dispatchGroup.leave()
+            self.dispatchGroup.notify(queue: .main) {
+                self.capitalizePokemonNameFirstLetter()
+            }
         }
     }
     
     func getPokemonListCount() -> Int {
         return pokemonList?.list.count ?? 0
+    }
+    
+    func capitalizePokemonNameFirstLetter() {
+        guard let count = (pokemonList?.list.count) else {return}
+        for i in 0...count-1 {
+            pokemonList?.list[i].name?.capitalizeFirstLetter()
+        }
     }
     
     func getPokemonImageUrl(indexPathRow: Int) -> URL? {

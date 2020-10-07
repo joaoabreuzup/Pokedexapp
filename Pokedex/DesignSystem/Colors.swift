@@ -32,7 +32,6 @@ extension UIColor {
     }
     
     struct BackgroundTypeColor {
-        
         static let bug = UIColor(named: "background-type-bug")
         static let dark = UIColor(named: "background-type-dark")
         static let dragon = UIColor(named: "background-type-dragon")
@@ -52,8 +51,8 @@ extension UIColor {
         static let steel = UIColor(named: "background-type-steel")
         static let water = UIColor(named: "background-type-water")
         
-        static func switchBackgroundTypeColor(type: TypeClass) -> UIColor{
-            switch type.name {
+        static func switchBackgroundTypeColor(type: TypeClass?) -> UIColor {
+            switch type?.name {
             case "bug": return UIColor.BackgroundTypeColor.bug ?? UIColor()
             case "dark": return UIColor.BackgroundTypeColor.dark ?? UIColor()
             case "dragon": return UIColor.BackgroundTypeColor.dragon ?? UIColor()
@@ -75,6 +74,27 @@ extension UIColor {
             default: return .white
             }
         }
+    }
+    
+    struct TextColor {
+        static let textWhite = UIColor(named: "text-white")
+        static let textBlack = UIColor(named: "text-black")
+        static let textGrey = UIColor(named: "text-grey")
+        static let textNumber = UIColor(named: "text-number")
+    }
+    
+    struct BackgroundColor {
+        static let backgroundWhite = UIColor(named: "background-white")
+        static let backgroundrPessedInput = UIColor(named: "background-pressed-input")
+        static let backgroundModal = UIColor(named: "background-modal")
+        static let backgroundDefaultInput = UIColor(named: "background-default-input")
+    }
+    
+    struct GradientColor {
+        static let pokeballGreyTopLeft = UIColor(named: "gradient-pokeball-grey-top-left")
+        static let pokeballGreyBottomRight = UIColor(named: "gradient-pokeball-grey-bottom-right")
+        static let pokeballCenterCenter = UIColor(named: "gradient-pokeball-center-center")
+        static let pokeballBottomCenter = UIColor(named: "gradient-pokeball-bottom-center")
     }
     
 }

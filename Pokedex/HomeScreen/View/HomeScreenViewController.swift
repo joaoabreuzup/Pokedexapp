@@ -67,7 +67,6 @@ extension HomeScreenViewController: UICollectionViewDataSource {
             )
         }
         return cell
-        
     }
     
 }
