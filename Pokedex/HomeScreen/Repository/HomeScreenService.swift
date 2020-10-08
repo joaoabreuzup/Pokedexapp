@@ -14,7 +14,7 @@ enum CustomError: Error {
 }
 
 protocol HomeScreenServiceProtocol {
-    func fetchPokemonUrlList(completion: @escaping (Result<PokemonUrlList,Error>) -> Void)
+    func fetchPokemonUrlList(url: String?, completion: @escaping (Result<PokemonUrlList,Error>) -> Void)
     func fetchPokemon(with url: String?, completion: @escaping (Result<Pokemon,Error>) -> Void)
 }
 
@@ -29,8 +29,8 @@ class HomeScreenService: HomeScreenServiceProtocol {
     }
     
     // MARK: - Methods
-    func fetchPokemonUrlList(completion: @escaping (Result<PokemonUrlList, Error>) -> Void) {
-        networkDispatcher.request(url: Urls.pokemonListUrl) { result in
+    func fetchPokemonUrlList(url: String?, completion: @escaping (Result<PokemonUrlList, Error>) -> Void) {
+        networkDispatcher.request(url: url ?? "") { result in
             switch result {
             case .success(let data):
                 do {
@@ -44,6 +44,8 @@ class HomeScreenService: HomeScreenServiceProtocol {
             }
         }
     }
+    
+    
     
     func fetchPokemon(with url: String?, completion: @escaping (Result<Pokemon, Error>) -> Void) {
         guard let url = url else {return}

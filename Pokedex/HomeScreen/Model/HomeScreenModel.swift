@@ -11,6 +11,8 @@ import Foundation
 // MARK: - PokemonList
 struct PokemonUrlList: Codable {
     let count: Int?
+    var next: String?
+    var previous: String?
     let results: [Results]?
 }
 
@@ -38,7 +40,7 @@ struct Sprites: Codable {
 
 // MARK: - Other
 struct Other: Codable {
-    let officialArtwork: OfficialArtwork?
+    let officialArtwork : OfficialArtwork?
 
     enum CodingKeys: String, CodingKey {
         case officialArtwork = "official-artwork"

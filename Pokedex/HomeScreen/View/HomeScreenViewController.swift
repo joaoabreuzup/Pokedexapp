@@ -10,14 +10,17 @@ import UIKit
 
 class HomeScreenViewController: UIViewController {
     
+    // MARK: - LifeCycle
     override func loadView() {
         super.loadView()
         setupView()
-        viewModel.fetchPokemonUrlList()
+        viewModel.fetchPokemonUrlList(url: Urls.pokemonListUrl)
     }
     
+    // MARK: - ViewModel
     private var viewModel: HomeScreenViewModelProtocol
     
+    // MARK: - Init
     init(viewModel: HomeScreenViewModelProtocol) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -27,8 +30,11 @@ class HomeScreenViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Views
     private lazy var collectionView: UICollectionView = createCollection()
     
+    
+    // MARK: - Private Methods
     private func createCollection() -> UICollectionView {
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.scrollDirection = .vertical
@@ -43,8 +49,15 @@ class HomeScreenViewController: UIViewController {
         return collectionView
     }
     
+    
+    
+    private func hideSpinner() {
+        
+    }
+    
 }
 
+// MARK: - UICollectionViewDataSource
 extension HomeScreenViewController: UICollectionViewDataSource {
     func collectionView(
         _ collectionView: UICollectionView,
@@ -71,6 +84,7 @@ extension HomeScreenViewController: UICollectionViewDataSource {
     
 }
 
+// MARK: - UICollectionViewDelegateFlowLayout
 extension HomeScreenViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(
         _ collectionView: UICollectionView,
@@ -103,5 +117,15 @@ extension HomeScreenViewController: ViewCode {
 extension HomeScreenViewController: HomeScreenViewModelDelegate {
     func reloadData() {
         self.collectionView.reloadData()
+    }
+}
+
+extension HomeScreenViewController: UIScrollViewDelegate {
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        let offsetY = scrollView.contentOffset.y
+        let contentHeight = scrollView.contentSize.height
+        if offsetY / contentHeight >= 0.3 {
+            viewModel.fetchPokemonUrlList(url: viewModel.getNextPageUrl())
+        }
     }
 }

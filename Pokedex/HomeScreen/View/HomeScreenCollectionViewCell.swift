@@ -209,14 +209,6 @@ extension HomeScreenCollectionViewCell: ViewCode {
         layer.cornerRadius = 10
         layer.shadowRadius = 10
         layer.shadowOpacity = 0.5
-//        layer.shadowPath = UIBezierPath (
-//            rect: CGRect (
-//                x: 0,
-//                y: bounds.maxY - layer.shadowRadius,
-//                width: bounds.width,
-//                height: layer.shadowRadius
-//            )
-//        ).cgPath
     }
     
 }

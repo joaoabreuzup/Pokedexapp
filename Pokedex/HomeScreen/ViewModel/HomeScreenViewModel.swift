@@ -9,13 +9,13 @@
 import Foundation
 
 protocol HomeScreenViewModelProtocol {
-    func fetchPokemonUrlList()
+    func fetchPokemonUrlList(url: String)
     func getPokemonListCount() -> Int
     func getPokemonImageUrl(indexPathRow: Int) -> URL?
     func getPokemonId(indexPathRow: Int) -> Int
     func getPokemonName(indexPathRow: Int) -> String
-    func getPokemonFirstType(indexPathRow: Int) -> TypeClass
     func getPokemonTypes(indexPathRow: Int) -> [Types]
+    func getNextPageUrl() -> String
     var delegate: HomeScreenViewModelDelegate? { get set }
 }
 
@@ -29,6 +29,7 @@ class HomeScreenViewModel: HomeScreenViewModelProtocol {
     private var pokemonList: PokemonList? {
         didSet {
             dispatchGroup.notify(queue: .main) {
+                self.sortPokemonList()
                 self.delegate?.reloadData()
             }
         }
@@ -59,28 +60,39 @@ class HomeScreenViewModel: HomeScreenViewModelProtocol {
         }
     }
     
-    private func fillPokemonList() {
+    private func fillPokemonList(pokemonUrlList: PokemonUrlList?) {
         guard let resultList = pokemonUrlList?.results?.count else {return}
-        pokemonList = PokemonList(list: [])
+        pokemonList = pokemonList == nil ? PokemonList(list: []) : pokemonList
         for i in 0..<resultList {
             dispatchGroup.enter()
             guard let url = pokemonUrlList?.results?[i].url else { return }
             fetchPokemon(with: url) { result in
                 switch result {
                 case .success(let pokemon):
-                    self.pokemonList?.list.append(pokemon)
+                    var pokemonNameCapitalized = pokemon
+                    pokemonNameCapitalized.name?.capitalizeFirstLetter()
+                    self.pokemonList?.list.append(pokemonNameCapitalized)
+                    self.dispatchGroup.leave()
                 case .failure(let err):
                     print(err.localizedDescription)
+                    self.dispatchGroup.leave()
                 }
-                self.dispatchGroup.leave()
+                
             }
         }
     }
     
+    private func sortPokemonList() {
+        pokemonList?.list.sort {
+            guard let id1 = $0.id, let id2 = $1.id else {return false}
+            return id1 < id2
+        }
+    }
+    
     // MARK: - Public Methods
-    func fetchPokemonUrlList() {
+    func fetchPokemonUrlList(url: String) {
         dispatchGroup.enter()
-        service.fetchPokemonUrlList { result in
+        service.fetchPokemonUrlList(url: url) { result in
             switch result {
             case .success(let list):
                 self.pokemonUrlList = list
@@ -92,11 +104,8 @@ class HomeScreenViewModel: HomeScreenViewModelProtocol {
         }
         dispatchGroup.notify(queue: .main) {
             self.dispatchGroup.enter()
-            self.fillPokemonList()
+            self.fillPokemonList(pokemonUrlList: self.pokemonUrlList)
             self.dispatchGroup.leave()
-            self.dispatchGroup.notify(queue: .main) {
-                self.capitalizePokemonNameFirstLetter()
-            }
         }
     }
     
@@ -104,11 +113,8 @@ class HomeScreenViewModel: HomeScreenViewModelProtocol {
         return pokemonList?.list.count ?? 0
     }
     
-    func capitalizePokemonNameFirstLetter() {
-        guard let count = (pokemonList?.list.count) else {return}
-        for i in 0...count-1 {
-            pokemonList?.list[i].name?.capitalizeFirstLetter()
-        }
+    func getNextPageUrl() -> String {
+        return pokemonUrlList?.next ?? ""
     }
     
     func getPokemonImageUrl(indexPathRow: Int) -> URL? {
@@ -122,11 +128,7 @@ class HomeScreenViewModel: HomeScreenViewModelProtocol {
     func getPokemonName(indexPathRow: Int) -> String {
         return pokemonList?.list[indexPathRow].name ?? ""
     }
-    
-    func getPokemonFirstType(indexPathRow: Int) -> TypeClass {
-        return pokemonList?.list[indexPathRow].types?.first?.type ?? TypeClass(name: nil)
-    }
-    
+        
     func getPokemonTypes(indexPathRow: Int) -> [Types] {
         return pokemonList?.list[indexPathRow].types ?? []
     }
