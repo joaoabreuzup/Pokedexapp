@@ -10,4 +10,5 @@ import Foundation
 
 class Urls {
     static let pokemonListUrl = "https://pokeapi.co/api/v2/pokemon"
+    static let allPokemonUrls = "https://pokeapi.co/api/v2/pokemon?offset=0&limit=1050"
 }

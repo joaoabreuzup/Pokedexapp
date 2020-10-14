@@ -19,11 +19,13 @@ class NetworkDispatcher: NetworkDispatcherProtocol {
     func request(url: String, completion: @escaping (Result<Data, Error>) -> Void) {
         guard let request = URL(string: url) else { return }
         session.dataTask(with: request) { (data, response, error) in
-            if let fetchedData = data {
-                completion(.success(fetchedData))
-            } else {
-                if let err = error {
-                    completion(.failure(err))
+            DispatchQueue.main.async {
+                if let fetchedData = data {
+                    completion(.success(fetchedData))
+                } else {
+                    if let err = error {
+                        completion(.failure(err))
+                    }
                 }
             }
         }.resume()

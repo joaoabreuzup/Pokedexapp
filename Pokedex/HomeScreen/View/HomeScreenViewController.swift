@@ -33,6 +33,19 @@ class HomeScreenViewController: UIViewController {
     // MARK: - Views
     private lazy var collectionView: UICollectionView = createCollection()
     
+    private lazy var searchBar: UISearchBar = {
+        let searchBar = UISearchBar()
+        searchBar.delegate = self
+        searchBar.placeholder = "What Pokémon are you looking for?"
+        searchBar.searchTextField.adjustsFontSizeToFitWidth = true
+        searchBar.sizeToFit()
+        searchBar.isTranslucent = false
+        searchBar.searchTextField.backgroundColor = UIColor.BackgroundColor.backgroundDefaultInput
+        searchBar.setImage(UIImage.Icons.search, for: .search, state: .normal)
+        searchBar.barTintColor = .white
+        searchBar.searchTextField.textColor = .black
+        return searchBar
+    }()
     
     // MARK: - Private Methods
     private func createCollection() -> UICollectionView {
@@ -47,12 +60,6 @@ class HomeScreenViewController: UIViewController {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.contentInset = .init(top: 40, left: 0, bottom: 40, right: 0)
         return collectionView
-    }
-    
-    
-    
-    private func hideSpinner() {
-        
     }
     
 }
@@ -98,18 +105,27 @@ extension HomeScreenViewController: UICollectionViewDelegateFlowLayout {
 extension HomeScreenViewController: ViewCode {
     func buildViewHierarchy() {
         view.addSubview(collectionView)
+        view.addSubview(searchBar)
     }
     
     func setupConstraints() {
         collectionView.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(50)
+            $0.top.equalTo(searchBar.snp.bottom).offset(10)
             $0.bottom.leading.trailing.equalTo(view.safeAreaInsets)
+        }
+        
+        searchBar.snp.makeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            $0.height.equalTo(60)
+            $0.width.equalTo(334)
         }
     }
     
     func additionalConfigurations() {
         viewModel.delegate = self
         collectionView.backgroundColor = .white
+        view.backgroundColor = .white
     }
     
 }
@@ -124,8 +140,27 @@ extension HomeScreenViewController: UIScrollViewDelegate {
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         let offsetY = scrollView.contentOffset.y
         let contentHeight = scrollView.contentSize.height
-        if offsetY / contentHeight >= 0.3 {
+//        print("offsetY: \(offsetY) | contentHeight: \(contentHeight - scrollView.frame.size.height)")
+        if offsetY / (contentHeight - scrollView.frame.size.height) >= 0.5 {
+//            print("fetching more data...")
             viewModel.fetchPokemonUrlList(url: viewModel.getNextPageUrl())
         }
+    }
+}
+
+extension HomeScreenViewController: UISearchBarDelegate {
+    
+    @objc func searchPokemon(name: String) {
+        viewModel.searchPokemon(name: name)
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        NSObject.cancelPreviousPerformRequests(withTarget: self,
+                                               selector: #selector(searchPokemon(name:)),
+                                               object: nil)
+
+        perform(#selector(searchPokemon(name:)),
+                with: searchBar.searchTextField.text?.lowercased(), afterDelay: 1.0)
+        
     }
 }

@@ -17,7 +17,8 @@ struct PokemonUrlList: Codable {
 }
 
 // MARK: - Results
-struct Results: Codable {
+struct Results: Codable, Equatable {
+    let name: String?
     let url: String?
 }
 

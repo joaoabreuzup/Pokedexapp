@@ -16,6 +16,7 @@ protocol HomeScreenViewModelProtocol {
     func getPokemonName(indexPathRow: Int) -> String
     func getPokemonTypes(indexPathRow: Int) -> [Types]
     func getNextPageUrl() -> String
+    func searchPokemon(name: String)
     var delegate: HomeScreenViewModelDelegate? { get set }
 }
 
@@ -28,14 +29,16 @@ class HomeScreenViewModel: HomeScreenViewModelProtocol {
     // MARK: - Model
     private var pokemonList: PokemonList? {
         didSet {
-            dispatchGroup.notify(queue: .main) {
-                self.sortPokemonList()
+//             DispatchQueue.main.async {
                 self.delegate?.reloadData()
-            }
+//            }
         }
     }
     
+    private var realPokemonList: PokemonList?
+    
     // MARK: - Dependencies
+    private var allPokemonUrls: PokemonUrlList?
     private var pokemonUrlList: PokemonUrlList?
     private var service: HomeScreenServiceProtocol
     var delegate: HomeScreenViewModelDelegate?
@@ -44,6 +47,7 @@ class HomeScreenViewModel: HomeScreenViewModelProtocol {
     // MARK: - Init
     init(service: HomeScreenServiceProtocol = HomeScreenService()) {
         self.service = service
+        fetchAllPokemonUrls()
     }
     
     // MARK: - Private Methods
@@ -60,25 +64,28 @@ class HomeScreenViewModel: HomeScreenViewModelProtocol {
         }
     }
     
-    private func fillPokemonList(pokemonUrlList: PokemonUrlList?) {
-        guard let resultList = pokemonUrlList?.results?.count else {return}
+    private func fillPokemonList(pokemonUrlList: [Results]?) {
+        guard let resultList = pokemonUrlList?.count else {return}
         pokemonList = pokemonList == nil ? PokemonList(list: []) : pokemonList
         for i in 0..<resultList {
             dispatchGroup.enter()
-            guard let url = pokemonUrlList?.results?[i].url else { return }
+            guard let url = pokemonUrlList?[i].url else { return }
             fetchPokemon(with: url) { result in
                 switch result {
                 case .success(let pokemon):
                     var pokemonNameCapitalized = pokemon
-                    pokemonNameCapitalized.name?.capitalizeFirstLetter()
-                    self.pokemonList?.list.append(pokemonNameCapitalized)
-                    self.dispatchGroup.leave()
+                    if pokemonNameCapitalized.sprites?.other?.officialArtwork?.frontDefault != nil {
+                        pokemonNameCapitalized.name?.capitalizeFirstLetter()
+                        self.pokemonList?.list.append(pokemonNameCapitalized)
+                        self.dispatchGroup.leave()
+                    }
                 case .failure(let err):
                     print(err.localizedDescription)
                     self.dispatchGroup.leave()
                 }
                 
             }
+            sortPokemonList()
         }
     }
     
@@ -89,7 +96,33 @@ class HomeScreenViewModel: HomeScreenViewModelProtocol {
         }
     }
     
+    private func fetchAllPokemonUrls() {
+        service.fetchPokemonUrlList(url: Urls.allPokemonUrls) { result in
+            switch result {
+            case .success(let list):
+                self.allPokemonUrls = list
+            case .failure(let err):
+                print(err.localizedDescription)
+            }
+        }
+    }
+    
     // MARK: - Public Methods
+    func searchPokemon(name: String) {
+        let resultListPokemon = allPokemonUrls?.results?.filter({
+            ($0.name?.contains(name) ?? false)
+        })
+        if name != "" {
+            realPokemonList = pokemonList
+            pokemonList?.list.removeAll()
+            fillPokemonList(pokemonUrlList: resultListPokemon)
+            
+        } else {
+            pokemonList = realPokemonList
+        }
+        print("resultados para \(name): \(String(describing: resultListPokemon))")
+    }
+    
     func fetchPokemonUrlList(url: String) {
         dispatchGroup.enter()
         service.fetchPokemonUrlList(url: url) { result in
@@ -104,7 +137,7 @@ class HomeScreenViewModel: HomeScreenViewModelProtocol {
         }
         dispatchGroup.notify(queue: .main) {
             self.dispatchGroup.enter()
-            self.fillPokemonList(pokemonUrlList: self.pokemonUrlList)
+            self.fillPokemonList(pokemonUrlList: self.pokemonUrlList?.results)
             self.dispatchGroup.leave()
         }
     }

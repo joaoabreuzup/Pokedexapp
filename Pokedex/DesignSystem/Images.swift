@@ -55,4 +55,8 @@ extension UIImage {
         }
     }
     
+    struct Icons {
+        static let search = UIImage(named: "Vector")
+    }
+    
 }
