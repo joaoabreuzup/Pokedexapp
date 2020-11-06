@@ -11,4 +11,6 @@ import UIKit
 extension UIFont {
     static let pokemonName = systemFont(ofSize: 26, weight: .bold)
     static let pokemonNumber = systemFont(ofSize: 12, weight: .bold)
+    static let title = systemFont(ofSize: 32, weight: .bold)
+    static let description = systemFont(ofSize: 16, weight: .regular)
 }

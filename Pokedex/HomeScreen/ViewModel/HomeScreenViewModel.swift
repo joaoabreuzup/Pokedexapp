@@ -10,14 +10,8 @@ import Foundation
 
 protocol HomeScreenViewModelProtocol {
     func fetchPokemonUrlList(url: String)
-    func getPokemonListCount() -> Int
-    func getPokemonImageUrl(indexPathRow: Int) -> URL?
-    func getPokemonId(indexPathRow: Int) -> Int
-    func getPokemonName(indexPathRow: Int) -> String
-    func getPokemonTypes(indexPathRow: Int) -> [Types]
     func getNextPageUrl() -> String
-    func searchPokemon(name: String)
-    var delegate: HomeScreenViewModelDelegate? { get set }
+    var collectionViewModel: CollectionViewModelProtocol? { get set }
 }
 
 protocol HomeScreenViewModelDelegate {
@@ -29,15 +23,14 @@ class HomeScreenViewModel: HomeScreenViewModelProtocol {
     // MARK: - Model
     private var pokemonList: PokemonList? {
         didSet {
-//             DispatchQueue.main.async {
-                self.delegate?.reloadData()
-//            }
+            collectionViewModel?.setPokemonList(pokemonList: self.pokemonList ?? PokemonList(list: []))
         }
     }
     
     private var realPokemonList: PokemonList?
     
     // MARK: - Dependencies
+    public var collectionViewModel: CollectionViewModelProtocol?
     private var allPokemonUrls: PokemonUrlList?
     private var pokemonUrlList: PokemonUrlList?
     private var service: HomeScreenServiceProtocol
@@ -85,7 +78,9 @@ class HomeScreenViewModel: HomeScreenViewModelProtocol {
                 }
                 
             }
-            sortPokemonList()
+            dispatchGroup.notify(queue: .main) {
+                self.sortPokemonList()
+            }
         }
     }
     
@@ -142,28 +137,8 @@ class HomeScreenViewModel: HomeScreenViewModelProtocol {
         }
     }
     
-    func getPokemonListCount() -> Int {
-        return pokemonList?.list.count ?? 0
-    }
-    
     func getNextPageUrl() -> String {
         return pokemonUrlList?.next ?? ""
-    }
-    
-    func getPokemonImageUrl(indexPathRow: Int) -> URL? {
-        return URL(string: pokemonList?.list[indexPathRow].sprites?.other?.officialArtwork?.frontDefault ?? "")
-    }
-    
-    func getPokemonId(indexPathRow: Int) -> Int {
-        return pokemonList?.list[indexPathRow].id ?? 0
-    }
-    
-    func getPokemonName(indexPathRow: Int) -> String {
-        return pokemonList?.list[indexPathRow].name ?? ""
-    }
-        
-    func getPokemonTypes(indexPathRow: Int) -> [Types] {
-        return pokemonList?.list[indexPathRow].types ?? []
     }
     
 }

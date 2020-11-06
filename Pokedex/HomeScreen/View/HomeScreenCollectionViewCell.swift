@@ -12,6 +12,8 @@ import SnapKit
 
 class HomeScreenCollectionViewCell: UICollectionViewCell {
     
+    static let reuseIdentifier = "customCell"
+    
     private var type: TypeClass? {
         didSet {
             backgroundColor = UIColor.BackgroundTypeColor.switchBackgroundTypeColor(type: type)
@@ -77,12 +79,23 @@ class HomeScreenCollectionViewCell: UICollectionViewCell {
     }()
     
     // MARK: - Private Methods
+    
+    private func numberMask(id: Int) -> String {
+        let number = String(id)
+        let numberOfCharacters = number.count
+        switch numberOfCharacters {
+        case 1: return "#00\(number)"
+        case 2: return "#0\(number)"
+        default: return "#\(number)"
+        }
+    }
+    
     private func downloadImage(from url: URL?) {
         pokemonImage.sd_setImage(with: url)
     }
     
     private func setupPokemonIdLabel(with id: Int) {
-        pokemonId.text = "#\(id)"
+        pokemonId.text = numberMask(id: id)
     }
     
     private func setupPokemonNameLabel(with name: String) {

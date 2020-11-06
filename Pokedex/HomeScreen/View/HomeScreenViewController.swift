@@ -15,14 +15,17 @@ class HomeScreenViewController: UIViewController {
         super.loadView()
         setupView()
         viewModel.fetchPokemonUrlList(url: Urls.pokemonListUrl)
+        viewModel.collectionViewModel = collectionViewModel
     }
     
     // MARK: - ViewModel
     private var viewModel: HomeScreenViewModelProtocol
+    private var collectionViewModel: CollectionViewModel
     
     // MARK: - Init
-    init(viewModel: HomeScreenViewModelProtocol) {
+    init(viewModel: HomeScreenViewModelProtocol, collectionViewModel: CollectionViewModel) {
         self.viewModel = viewModel
+        self.collectionViewModel = collectionViewModel
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -33,20 +36,6 @@ class HomeScreenViewController: UIViewController {
     // MARK: - Views
     private lazy var collectionView: UICollectionView = createCollection()
     
-    private lazy var searchBar: UISearchBar = {
-        let searchBar = UISearchBar()
-        searchBar.delegate = self
-        searchBar.placeholder = "What Pokémon are you looking for?"
-        searchBar.searchTextField.adjustsFontSizeToFitWidth = true
-        searchBar.sizeToFit()
-        searchBar.isTranslucent = false
-        searchBar.searchTextField.backgroundColor = UIColor.BackgroundColor.backgroundDefaultInput
-        searchBar.setImage(UIImage.Icons.search, for: .search, state: .normal)
-        searchBar.barTintColor = .white
-        searchBar.searchTextField.textColor = .black
-        return searchBar
-    }()
-    
     // MARK: - Private Methods
     private func createCollection() -> UICollectionView {
         let flowLayout = UICollectionViewFlowLayout()
@@ -54,11 +43,12 @@ class HomeScreenViewController: UIViewController {
         flowLayout.minimumLineSpacing = 40
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
-        collectionView.register(HomeScreenCollectionViewCell.self, forCellWithReuseIdentifier: "customCell")
+        collectionView.register(HomeScreenCollectionViewCell.self, forCellWithReuseIdentifier: HomeScreenCollectionViewCell.reuseIdentifier)
+        collectionView.register(HeaderCollectionView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: HeaderCollectionView.reuseIdentifier)
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.contentInset = .init(top: 40, left: 0, bottom: 40, right: 0)
+        collectionView.contentInset = .init(top: 0, left: 0, bottom: 40, right: 0)
         return collectionView
     }
     
@@ -66,38 +56,39 @@ class HomeScreenViewController: UIViewController {
 
 // MARK: - UICollectionViewDataSource
 extension HomeScreenViewController: UICollectionViewDataSource {
-    func collectionView(
-        _ collectionView: UICollectionView,
-        numberOfItemsInSection section: Int
-    ) -> Int {
-        return viewModel.getPokemonListCount()
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return collectionViewModel.getPokemonListCount()
     }
     
-    func collectionView(
-        _ collectionView: UICollectionView,
-        cellForItemAt indexPath: IndexPath
-    ) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        return CGSize(width: view.frame.width, height: 321)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        let headerView: UICollectionReusableView = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: HeaderCollectionView.reuseIdentifier, for: indexPath)
+        return headerView
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "customCell", for: indexPath)
         if let customCell = cell as? HomeScreenCollectionViewCell {
             customCell.setupCell(
-                url: viewModel.getPokemonImageUrl(indexPathRow: indexPath.row),
-                id: viewModel.getPokemonId(indexPathRow: indexPath.row),
-                name: viewModel.getPokemonName(indexPathRow: indexPath.row),
-                types: viewModel.getPokemonTypes(indexPathRow: indexPath.row)
+                url: collectionViewModel.getPokemonImageUrl(indexPathRow: indexPath.row),
+                id: collectionViewModel.getPokemonId(indexPathRow: indexPath.row),
+                name: collectionViewModel.getPokemonName(indexPathRow: indexPath.row),
+                types: collectionViewModel.getPokemonTypes(indexPathRow: indexPath.row)
             )
         }
         return cell
     }
     
+    
+    
 }
 
 // MARK: - UICollectionViewDelegateFlowLayout
 extension HomeScreenViewController: UICollectionViewDelegateFlowLayout {
-    func collectionView(
-        _ collectionView: UICollectionView,
-        layout collectionViewLayout: UICollectionViewLayout,
-        sizeForItemAt indexPath: IndexPath
-    ) -> CGSize {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: 334, height: 115)
     }
 }
@@ -105,32 +96,24 @@ extension HomeScreenViewController: UICollectionViewDelegateFlowLayout {
 extension HomeScreenViewController: ViewCode {
     func buildViewHierarchy() {
         view.addSubview(collectionView)
-        view.addSubview(searchBar)
     }
     
     func setupConstraints() {
         collectionView.snp.makeConstraints {
-            $0.top.equalTo(searchBar.snp.bottom).offset(10)
+            $0.top.equalTo(view.snp.top)
             $0.bottom.leading.trailing.equalTo(view.safeAreaInsets)
-        }
-        
-        searchBar.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
-            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
-            $0.height.equalTo(60)
-            $0.width.equalTo(334)
         }
     }
     
     func additionalConfigurations() {
-        viewModel.delegate = self
+        collectionViewModel.delegate = self
         collectionView.backgroundColor = .white
         view.backgroundColor = .white
     }
     
 }
 
-extension HomeScreenViewController: HomeScreenViewModelDelegate {
+extension HomeScreenViewController: CollectionViewModelDelegate {
     func reloadData() {
         self.collectionView.reloadData()
     }
@@ -140,27 +123,25 @@ extension HomeScreenViewController: UIScrollViewDelegate {
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         let offsetY = scrollView.contentOffset.y
         let contentHeight = scrollView.contentSize.height
-//        print("offsetY: \(offsetY) | contentHeight: \(contentHeight - scrollView.frame.size.height)")
-        if offsetY / (contentHeight - scrollView.frame.size.height) >= 0.5 {
-//            print("fetching more data...")
+        if offsetY / (contentHeight - scrollView.frame.size.height) >= 0.8 {
             viewModel.fetchPokemonUrlList(url: viewModel.getNextPageUrl())
         }
     }
 }
 
-extension HomeScreenViewController: UISearchBarDelegate {
-    
-    @objc func searchPokemon(name: String) {
-        viewModel.searchPokemon(name: name)
-    }
-    
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        NSObject.cancelPreviousPerformRequests(withTarget: self,
-                                               selector: #selector(searchPokemon(name:)),
-                                               object: nil)
-
-        perform(#selector(searchPokemon(name:)),
-                with: searchBar.searchTextField.text?.lowercased(), afterDelay: 1.0)
-        
-    }
-}
+//extension HomeScreenViewController: UISearchBarDelegate {
+//
+//    @objc func searchPokemon(name: String) {
+//        viewModel.searchPokemon(name: name)
+//    }
+//
+//    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+//        NSObject.cancelPreviousPerformRequests(withTarget: self,
+//                                               selector: #selector(searchPokemon(name:)),
+//                                               object: nil)
+//
+//        perform(#selector(searchPokemon(name:)),
+//                with: searchBar.searchTextField.text?.lowercased(), afterDelay: 1.0)
+//
+//    }
+//}

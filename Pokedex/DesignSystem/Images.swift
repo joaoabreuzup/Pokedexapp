@@ -56,7 +56,14 @@ extension UIImage {
     }
     
     struct Icons {
-        static let search = UIImage(named: "Vector")
+        static let search = UIImage(named: "search")
+        static let generation = UIImage(named: "generation")
+        static let sort = UIImage(named: "sort")
+        static let filter = UIImage(named: "filter")
+    }
+    
+    struct Components {
+        static let pokeballHome = UIImage(named: "pokeballHome")
     }
     
 }
